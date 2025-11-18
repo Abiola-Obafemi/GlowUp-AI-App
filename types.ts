@@ -42,10 +42,13 @@ export interface UserPreferences {
 
 // Fix for TypeScript error: Property 'env' does not exist on type 'ImportMeta'.
 // This manually defines the types for Vite's environment variables.
-interface ImportMetaEnv {
-  readonly VITE_STRIPE_PUBLISHABLE_KEY: string;
-}
+// FIX: Wrapped in `declare global` to correctly augment the global scope from within a module.
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_STRIPE_PUBLISHABLE_KEY: string;
+  }
 
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
 }

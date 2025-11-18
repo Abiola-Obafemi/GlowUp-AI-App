@@ -1,12 +1,10 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { ChatMessage, AnalysisResult, UserPreferences } from "../types";
 
-// Ensure the API_KEY is handled correctly as per guidelines
-const API_KEY = process.env.API_KEY;
-if (!API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+// In a production/Vercel environment, process.env is not available directly in the client-side code.
+// The API key must be provided by the secure environment when the function is called.
+// We remove the upfront check that causes the app to crash.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
 
 
 export const fileToBase64 = (file: File): Promise<string> => {
