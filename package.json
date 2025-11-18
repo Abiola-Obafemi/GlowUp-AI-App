@@ -1,24 +1,25 @@
 {
-  "name": "glowup-ai",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "glowup-ai-app",
+  "version": "1.0.0",
+  "description": "Your personal AI assistant for a complete style, confidence, and habit glow-up.",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "echo 'No start script defined for direct execution. Deploy to a hosting provider.' && exit 1"
   },
   "dependencies": {
     "@google/genai": "^1.29.1",
+    "@stripe/react-stripe-js": "^2.7.1",
+    "@stripe/stripe-js": "^3.5.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "@stripe/stripe-js": "3",
-    "@stripe/react-stripe-js": "2"
+    "stripe": "^15.8.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vercel/node": "^3.1.5",
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
