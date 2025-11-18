@@ -11,9 +11,9 @@ const FeatureListItem: React.FC<{ children: React.ReactNode, isPremium: boolean 
     </li>
 );
 
-// This is your public key. It's safe to be in the frontend.
-// Replace this with your own Stripe publishable key from the Stripe Dashboard.
-const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY_HERE');
+// This is your public key. It is now loaded securely from environment variables.
+// Make sure you set VITE_STRIPE_PUBLISHABLE_KEY in your hosting provider's settings.
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 const PremiumPageContent: React.FC = () => {
     const [isProcessing, setIsProcessing] = useState(false);
@@ -136,6 +136,14 @@ const PremiumPageContent: React.FC = () => {
 };
 
 const Premium: React.FC = () => {
+    // Check if the key exists to avoid Stripe errors. Show a message if it's not set up yet.
+    if (!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY) {
+        return (
+            <div className="flex items-center justify-center h-full text-center text-red-500 p-8">
+                Stripe has not been configured correctly. Please set the VITE_STRIPE_PUBLISHABLE_KEY environment variable.
+            </div>
+        )
+    }
     return (
         <Elements stripe={stripePromise}>
             <PremiumPageContent />

@@ -39,3 +39,13 @@ export interface UserPreferences {
   challenge: string;
   profilePicture: string | null;
 }
+
+// Fix for TypeScript error: Property 'env' does not exist on type 'ImportMeta'.
+// This manually defines the types for Vite's environment variables.
+interface ImportMetaEnv {
+  readonly VITE_STRIPE_PUBLISHABLE_KEY: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
