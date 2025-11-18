@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { analyzeSelfie, fileToBase64 } from '../services/geminiService';
+import { fileToBase64 } from '../services/geminiService';
 import { AnalysisResult, UserTier } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import PremiumModal from '../components/PremiumModal';
@@ -69,7 +69,19 @@ const SelfieAnalyzer: React.FC = () => {
     try {
       const file = fileInputRef.current.files[0];
       const base64Image = await fileToBase64(file);
-      const result = await analyzeSelfie(base64Image, userPreferences);
+      
+      const response = await fetch('/api/analyze-selfie', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: base64Image, prefs: userPreferences }),
+      });
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to get analysis from server.");
+      }
+
+      const result = await response.json();
       setAnalysisResult(result);
       setAnalysisCount(prev => prev + 1);
     } catch (err: any) {

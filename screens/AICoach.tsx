@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getCoachResponseStream } from '../services/geminiService';
 import { ChatMessage, UserTier } from '../types';
 import { useAppContext } from '../context/AppContext';
 import PremiumModal from '../components/PremiumModal';
@@ -36,19 +35,34 @@ const AICoach: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const stream = await getCoachResponseStream(newMessages, userPreferences);
+      const response = await fetch('/api/coach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ history: newMessages, prefs: userPreferences }),
+      });
+
+      if (!response.ok || !response.body) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Failed to get response from server.");
+      }
       
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
       let aiResponseText = '';
+      
       const aiMessage: ChatMessage = { sender: 'ai', text: '' };
       setMessages(prev => [...prev, aiMessage]);
 
-      for await (const chunk of stream) {
-        aiResponseText += chunk.text;
-        // Update the last message in the array with the new text
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        aiResponseText += decoder.decode(value);
         setMessages(prev => {
-          const updatedMessages = [...prev];
-          updatedMessages[updatedMessages.length - 1].text = aiResponseText;
-          return updatedMessages;
+            const updatedMessages = [...prev];
+            if(updatedMessages.length > 0) {
+              updatedMessages[updatedMessages.length - 1].text = aiResponseText;
+            }
+            return updatedMessages;
         });
       }
       

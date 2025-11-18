@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { generateGlowUpPlan } from '../services/geminiService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAppContext } from '../context/AppContext';
 import { UserTier } from '../types';
@@ -33,7 +32,16 @@ const GlowUpPlan: React.FC = () => {
   useEffect(() => {
     const fetchPlan = async () => {
       try {
-        const generatedPlan = await generateGlowUpPlan(userPreferences);
+        const res = await fetch('/api/generate-plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prefs: userPreferences }),
+        });
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch plan.');
+        }
+        const generatedPlan = await res.json();
         setPlan(generatedPlan);
       } catch (e: any) {
         setError(e.message);

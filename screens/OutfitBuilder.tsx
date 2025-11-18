@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { buildOutfit } from '../services/geminiService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAppContext } from '../context/AppContext';
 import { UserTier } from '../types';
@@ -56,8 +55,17 @@ const OutfitBuilder: React.FC = () => {
         setIsLoading(true);
         setGeneratedOutfit('');
         try {
-            const result = await buildOutfit(selectedItems, selectedOccasion, userPreferences);
-            setGeneratedOutfit(result);
+            const res = await fetch('/api/build-outfit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items: selectedItems, occasion: selectedOccasion, prefs: userPreferences })
+            });
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Failed to build outfit.');
+            }
+            const { outfit } = await res.json();
+            setGeneratedOutfit(outfit);
         } catch (e: any) {
             setError(e.message);
         } finally {

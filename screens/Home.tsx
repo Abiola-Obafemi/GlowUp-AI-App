@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Page } from '../types';
 import { SparklesIcon, ClipboardListIcon, BeakerIcon, ChartBarIcon, ArrowRightIcon } from '../components/Icons';
-import { getDailyTip } from '../services/geminiService';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const FeatureCard: React.FC<{ title: string, description: string, icon: React.ReactNode, page: Page, gradient: string }> = 
@@ -44,7 +43,16 @@ const Home: React.FC = () => {
             }
 
             try {
-                const tip = await getDailyTip(userPreferences);
+                const res = await fetch('/api/daily-tip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prefs: userPreferences }),
+                });
+
+                if (!res.ok) {
+                    throw new Error('Failed to fetch tip.');
+                }
+                const { tip } = await res.json();
                 setDailyTip(tip);
                 localStorage.setItem('dailyTip', JSON.stringify({ date: todayKey, tip }));
             } catch (error) {
