@@ -1,0 +1,7 @@
+{
+  "name": "GlowUp AI",
+  "description": "Your personal AI assistant for a complete style, confidence, and habit glow-up. Get personalized advice, build amazing outfits, and track your progress.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
